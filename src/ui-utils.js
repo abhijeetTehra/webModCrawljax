@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import { PAGE_ACTION_TYPES, xpbFrameworkPayload } from "./constant.js";
 import AnsiRegex from "ansi-regex";
-import { updateImageUrls } from "./updateImageSrc.js";
+// import { updateImageUrls } from "./updateImageSrc.js";
 import cheerio from "cheerio";
 import { v4 as uuidv4 } from "uuid";
 import { parseCSS, parseHTML } from "./Parser.js";
@@ -79,16 +79,16 @@ export const loadPage = async (url, browser, timeout = 600000) => {
   return page;
 };
 
-export const loadAndCrawlPage = async (page) => {
+export const loadAndCrawlPage = async (page, url) => {
   const pageTitle = await page.title();
 
   // console.log("page title: ", pageTitle);
 
-  const pageBody = await cleanAndGetPageBody(page);
+  const pageBody = await cleanAndGetPageBody(page, url);
 
   // console.log("Static HTML Body is parsed");
 
-  const pageCSS = await getCleanedCSS(page);
+  const pageCSS = await getCleanedCSS(page,url);
 
   // console.log("CSS is parsed");
 
@@ -99,7 +99,7 @@ export const loadAndCrawlPage = async (page) => {
   };
 };
 
-const getCleanedCSS = async (page) => {
+const getCleanedCSS = async (page,url) => {
   const cssFiles = await page.evaluate(() => {
     const links = Array.from(
       document.querySelectorAll('link[rel="stylesheet"]')
@@ -133,9 +133,9 @@ const getCleanedCSS = async (page) => {
   return { parsedCssData, originalCSS: cssContent };
 };
 
-const cleanAndGetPageBody = async (page) => {
+const cleanAndGetPageBody = async (page, url) => {
   const originalContent = await getCurrentPageBody(page);
-  const bodyContent = await cleanupHTMLContent(page, originalContent);
+  const bodyContent = await cleanupHTMLContent(page, originalContent, url);
 
   // console.log("HTML Cleanup is done");
 
@@ -235,11 +235,18 @@ export function extractLinkPath(link) {
   return parsedUrl.pathname;
 }
 
-export const cleanupHTMLContent = async (page, content) => {
+export const cleanupHTMLContent = async (content) => {
   content = content.replace(AnsiRegex(), "");
-  // content = await updateImageUrls(content, url);
-  content = updateIdAutomatically(content);
-  content = await cleanPageBodyForReact(page, content);
+  content = content.replace(/<noscript\b[^>]*>.*?<\/noscript>/gi, "");
+  content = content.replace(/<head\b[^>]*>.*?<\/head>/gi, "");
+  content = content.replace(
+    /(<div class="App" style=".*?visibility:\s*)hidden(.*?">)/gi,
+    "$1visible$2"
+  );
+  content = content.substring(content.search("<BODY>")+6,content.length-14)
+  // console.log(content.indexOf("<BODY>"));
+  // content = updateIdAutomatically(content);
+  // content = await cleanPageBodyForReact(page, content);
   return content;
 };
 

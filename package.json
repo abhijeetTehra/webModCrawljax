@@ -1,14 +1,8 @@
 {
-  "name": "nodejs",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "ansi-regex": "^6.0.1",
     "axios": "^1.4.0",
@@ -19,6 +13,7 @@
     "css-what": "^6.1.0",
     "css2xpath": "^0.0.3",
     "dom-compare": "^0.6.0",
+    "dom-parser": "^0.1.6",
     "exif": "^0.6.0",
     "exiftool-vendored": "^22.0.0",
     "express": "^4.18.2",
@@ -30,7 +25,8 @@
     "htmldiff-js": "^1.0.5",
     "jsdom": "^22.1.0",
     "nth-check": "^2.1.1",
-    "postcss": "^8.4.26",
+    "parse5": "^7.1.2",
+    "postcss": "^8.4.27",
     "ramda": "^0.29.0",
     "request": "^2.88.2",
     "sharp": "^0.32.4",
@@ -41,6 +37,5 @@
     "x-ray": "^2.3.4",
     "xmldom": "^0.6.0",
     "xpath": "^0.0.33"
-  },
-    "type": "module"
+  }
 }
